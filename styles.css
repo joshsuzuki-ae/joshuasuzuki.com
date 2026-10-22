@@ -777,6 +777,23 @@ button {
   transform: translateY(-6px);
 }
 
+/* Tile images load as they near the viewport (script.js), then fade in.
+   Without scripting, the <noscript> copy is shown instead. */
+.deferred-img {
+  opacity: 0;
+  transition: opacity 600ms var(--ease), transform var(--dur-3) var(--ease-out);
+}
+
+.deferred-img.is-loaded {
+  opacity: 1;
+}
+
+@media (scripting: none) {
+  .deferred-img {
+    display: none;
+  }
+}
+
 .tile-rosterlab {
   background: var(--rosterlab-bg);
   color: var(--rosterlab-text);
@@ -1068,6 +1085,10 @@ a.more-row:hover .more-title {
   background: var(--surface);
   cursor: text;
   transition: border-color var(--dur-1) var(--ease), background-color var(--dur-1) var(--ease);
+}
+
+[data-theme="dark"] .field {
+  background: var(--surface-2);
 }
 
 .field:focus-within {

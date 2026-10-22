@@ -307,6 +307,13 @@
 
   var preview = readPreview();
 
+  // Vertical offset of the mark's sun, in its 32-unit viewBox: low sun sits
+  // on the hills, and the disc is fully hidden about 2 degrees below them.
+  function sunOffset(elevation) {
+    if (elevation < 0) return Math.min(12, 1.2 - 2.2 * elevation);
+    return 1.2 - 12.5 * (1 - Math.exp(-elevation / 8));
+  }
+
   function compute(now) {
     var elevation = preview ? preview.elevation : sunElevation(now);
     var rising = preview ? preview.rising : sunElevation(now + 10 * MINUTE) > elevation;
@@ -326,7 +333,7 @@
       stars: palette.stars,
       ink: tile.ink,
       tone: tile.tone,
-      sunY: Math.max(-12, Math.min(8, -elevation * 0.42)),
+      sunY: sunOffset(elevation),
       nextSunrise: nextCrossing(now, true),
       nextSunset: nextCrossing(now, false)
     };

@@ -19,10 +19,10 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=5" />
 
   <link rel="preload" href="/assets/fonts/host-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="/styles.css?v=6" />
+  <link rel="stylesheet" href="/styles.css?v=8" />
 
   <!-- Applies the saved/preferred theme and the sky accent before first paint. -->
-  <script src="/theme-init.js?v=6"></script>
+  <script src="/theme-init.js?v=8"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -155,15 +155,16 @@
           </div>
           <figure class="tile-media">
             <img
-              src="/assets/work/rosterlab-trade-finder-1200.webp"
-              srcset="/assets/work/rosterlab-trade-finder-640.webp 640w, /assets/work/rosterlab-trade-finder-860.webp 860w, /assets/work/rosterlab-trade-finder-1200.webp 1200w"
+              class="deferred-img"
+              data-src="/assets/work/rosterlab-trade-finder-1200.webp"
+              data-srcset="/assets/work/rosterlab-trade-finder-640.webp 640w, /assets/work/rosterlab-trade-finder-860.webp 860w, /assets/work/rosterlab-trade-finder-1200.webp 1200w"
               sizes="(max-width: 960px) 100vw, 640px"
               width="1200"
               height="797"
-              loading="lazy"
               decoding="async"
               alt="RosterLab's trade finder, ranking realistic trades for a demo league by partner interest."
             />
+            <noscript><img src="/assets/work/rosterlab-trade-finder-1200.webp" srcset="/assets/work/rosterlab-trade-finder-640.webp 640w, /assets/work/rosterlab-trade-finder-860.webp 860w, /assets/work/rosterlab-trade-finder-1200.webp 1200w" sizes="(max-width: 960px) 100vw, 640px" width="1200" height="797" loading="lazy" decoding="async" alt="RosterLab's trade finder, ranking realistic trades for a demo league by partner interest." /></noscript>
           </figure>
         </article>
 
@@ -182,15 +183,16 @@
           </div>
           <figure class="tile-media">
             <img
-              src="/assets/work/afterglow-forecast-1100.webp"
-              srcset="/assets/work/afterglow-forecast-600.webp 600w, /assets/work/afterglow-forecast-780.webp 780w, /assets/work/afterglow-forecast-1100.webp 1100w"
+              class="deferred-img"
+              data-src="/assets/work/afterglow-forecast-1100.webp"
+              data-srcset="/assets/work/afterglow-forecast-600.webp 600w, /assets/work/afterglow-forecast-780.webp 780w, /assets/work/afterglow-forecast-1100.webp 1100w"
               sizes="(max-width: 760px) 80vw, (max-width: 960px) 64vw, 420px"
               width="1100"
               height="975"
-              loading="lazy"
               decoding="async"
               alt="Afterglow's forecast card for San Francisco: sunset quality 96 out of 100, rated Exceptional."
             />
+            <noscript><img src="/assets/work/afterglow-forecast-1100.webp" srcset="/assets/work/afterglow-forecast-600.webp 600w, /assets/work/afterglow-forecast-780.webp 780w, /assets/work/afterglow-forecast-1100.webp 1100w" sizes="(max-width: 760px) 80vw, (max-width: 960px) 64vw, 420px" width="1100" height="975" loading="lazy" decoding="async" alt="Afterglow's forecast card for San Francisco: sunset quality 96 out of 100, rated Exceptional." /></noscript>
           </figure>
         </article>
       </div>
@@ -357,6 +359,6 @@
     </div>
   </footer>
 
-  <script src="/script.js?v=6" defer></script>
+  <script src="/script.js?v=8" defer></script>
 </body>
 </html>

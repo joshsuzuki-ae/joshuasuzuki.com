@@ -122,6 +122,48 @@ const prefersReducedMotion =
 })();
 
 /* =========================
+   Deferred tile images: fetched as they approach the viewport so they
+   never compete with first paint.
+========================= */
+
+(function deferredImages() {
+  const images = Array.from(document.querySelectorAll("img.deferred-img"));
+  if (!images.length) return;
+
+  const load = (img) => {
+    img.addEventListener("load", () => img.classList.add("is-loaded"), { once: true });
+    if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+    img.src = img.dataset.src;
+    if (img.complete) img.classList.add("is-loaded");
+  };
+
+  if (!("IntersectionObserver" in window)) {
+    images.forEach(load);
+    return;
+  }
+
+  const observe = () => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          observer.unobserve(entry.target);
+          load(entry.target);
+        });
+      },
+      { rootMargin: "600px 0px" }
+    );
+    images.forEach((img) => observer.observe(img));
+  };
+
+  // `load` can fire before the first paint on a fast connection; two
+  // animation frames later, at least one frame has been painted.
+  const afterFirstPaint = () => requestAnimationFrame(() => requestAnimationFrame(observe));
+  if (document.readyState === "complete") afterFirstPaint();
+  else window.addEventListener("load", afterFirstPaint, { once: true });
+})();
+
+/* =========================
    Scroll reveal
 ========================= */
 
