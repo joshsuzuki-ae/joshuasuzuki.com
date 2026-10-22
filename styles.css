@@ -1444,6 +1444,11 @@ a.more-row:hover .more-title {
     grid-row: 1;
     grid-column: 2;
   }
+
+  .career li {
+    grid-template-columns: 7.5rem minmax(0, 1fr) minmax(0, 1fr);
+    gap: 4px 20px;
+  }
 }
 
 @media (max-width: 760px) {
