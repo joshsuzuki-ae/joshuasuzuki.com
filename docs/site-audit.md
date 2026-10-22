@@ -58,8 +58,17 @@ A few notes on these numbers:
 ### H1. Deploys have failed since the repo transfer, so production is three months behind
 - **Where:** all pages, all viewports.
 - **What's wrong:** The Jul 22 deploy of `794962e` ([run 29938873411](https://github.com/joshsuzuki-ae/joshuasuzuki.com/actions/runs/29938873411)) failed at "Configure AWS credentials (OIDC)" with `Not authorized to perform sts:AssumeRoleWithWebIdentity`. Nothing has shipped since the Jul 16 build (`bb1682d`), so the dark-mode work isn't live. Any fix from this audit won't ship either until this is resolved.
-- **Cause:** The IAM role's trust policy only trusts the old owner: `trust-policy.json:15` has `repo:jjsuzuki123/joshuasuzuki.com:ref:refs/heads/main`. The repo now lives at `joshsuzuki-ae/joshuasuzuki.com`, so GitHub's OIDC token no longer matches.
-- **Fix:** Add `repo:joshsuzuki-ae/joshuasuzuki.com:ref:refs/heads/main` to the `GitHubActionsDeployPersonalSite` role's trust policy in AWS, and update the repo copy. Then re-run the workflow (it supports `workflow_dispatch`). Consider a failure notification so this doesn't go unnoticed again.
+- **Cause:** The deploy role's trust policy only accepts GitHub tokens from the old owner. As of `794962e`, `trust-policy.json:15` allows `repo:jjsuzuki123/joshuasuzuki.com:ref:refs/heads/main`. Since the transfer, GitHub issues this repo immutable OIDC subjects that include the owner and repo IDs: the repo's OIDC settings report `use_immutable_subject: true`. Tokens now carry `repo:joshsuzuki-ae@272345758/joshuasuzuki.com@1121822714:ref:refs/heads/main`, so swapping only the owner name in the policy would still fail.
+- **Fix:** Change the `sub` value on the `GitHubActionsDeployPersonalSite` role. Use AWS CloudShell (below), or the console: IAM, Roles, `GitHubActionsDeployPersonalSite`, Trust relationships, Edit. Then re-run the failed deploy (it supports `workflow_dispatch`). The repo copy in `trust-policy.json` has the new value. Consider a failure notification so this doesn't go unnoticed again.
+
+```bash
+ROLE=GitHubActionsDeployPersonalSite
+aws iam get-role --role-name "$ROLE" --query Role.AssumeRolePolicyDocument --output json > trust-current.json
+sed 's#repo:jjsuzuki123/joshuasuzuki.com#repo:joshsuzuki-ae@272345758/joshuasuzuki.com@1121822714#' trust-current.json > trust-new.json
+diff trust-current.json trust-new.json   # only the sub line should change
+aws iam update-assume-role-policy --role-name "$ROLE" --policy-document file://trust-new.json
+```
+
 - **Screenshot:** the production build with OS dark mode (no toggle) next to the repo build. ![Production vs repo](site-audit/deploy-live-vs-repo-dark-mode.png)
 
 ### H2. No link-preview or search metadata on any page
