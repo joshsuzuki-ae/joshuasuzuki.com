@@ -7,6 +7,151 @@
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 })();
 
+const prefersReducedMotion =
+  typeof window.matchMedia === "function" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* =========================
+   Header: hairline once scrolled, small-screen menu
+========================= */
+
+(function header() {
+  const headerEl = document.querySelector(".site-header");
+  if (!headerEl) return;
+
+  const onScroll = () => headerEl.classList.toggle("is-scrolled", window.scrollY > 4);
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+
+  const toggle = headerEl.querySelector("[data-menu-toggle]");
+  const nav = document.getElementById("site-nav");
+  if (!toggle || !nav) return;
+
+  const isOpen = () => toggle.getAttribute("aria-expanded") === "true";
+  const setOpen = (open) => {
+    headerEl.classList.toggle("menu-open", open);
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+  };
+
+  toggle.addEventListener("click", () => setOpen(!isOpen()));
+  nav.addEventListener("click", (event) => {
+    if (event.target.closest("a")) setOpen(false);
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && isOpen()) {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+  document.addEventListener("click", (event) => {
+    if (isOpen() && !headerEl.contains(event.target)) setOpen(false);
+  });
+  if (typeof window.matchMedia === "function") {
+    const wide = window.matchMedia("(min-width: 761px)");
+    const close = () => setOpen(false);
+    if (typeof wide.addEventListener === "function") wide.addEventListener("change", close);
+  }
+})();
+
+/* =========================
+   Sky: San Francisco clock and the Afterglow tile caption.
+   Colors are applied in <head> by theme-init.js.
+========================= */
+
+(function sky() {
+  const skyApi = window.siteSky;
+  if (!skyApi || !skyApi.state) return;
+
+  const clock = document.querySelector("[data-sf-clock]");
+  const clockTime = clock ? clock.querySelector("time") : null;
+  const caption = document.querySelector("[data-sky-caption]");
+
+  const timeFormat = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: "America/Los_Angeles",
+  });
+
+  const PHASES = {
+    night: "Night over San Francisco",
+    blue: "Blue hour over San Francisco",
+    dawn: "Dawn over San Francisco",
+    afterglow: "Afterglow over San Francisco",
+    sunrise: "Sunrise over San Francisco",
+    golden: "Golden hour over San Francisco",
+    morning: "Morning in San Francisco",
+    afternoon: "Afternoon in San Francisco",
+  };
+
+  function describe(state) {
+    const parts = [PHASES[state.phase] || "San Francisco"];
+    const nextEvent =
+      state.nextSunset !== null &&
+      (state.nextSunrise === null || state.nextSunset < state.nextSunrise)
+        ? ["Sunset", state.nextSunset]
+        : ["Sunrise", state.nextSunrise];
+    if (nextEvent[1] !== null && !state.preview) {
+      parts.push(`${nextEvent[0].toLowerCase()} at ${timeFormat.format(nextEvent[1])}`);
+    }
+    return `${state.preview ? "Preview" : "Live"}: ${parts.join(", ")}.`;
+  }
+
+  function render() {
+    const state = skyApi.update();
+    if (clock && clockTime) {
+      const now = new Date(state.now);
+      clockTime.dateTime = now.toISOString();
+      clockTime.textContent = timeFormat.format(now);
+      clock.hidden = false;
+    }
+    if (caption) {
+      caption.textContent = describe(state);
+      caption.hidden = false;
+    }
+  }
+
+  render();
+
+  // Re-render on the next minute boundary, then every minute after that.
+  const msToNextMinute = 60000 - (Date.now() % 60000) + 50;
+  window.setTimeout(() => {
+    render();
+    window.setInterval(render, 60000);
+  }, msToNextMinute);
+})();
+
+/* =========================
+   Scroll reveal
+========================= */
+
+(function reveal() {
+  if (prefersReducedMotion || !("IntersectionObserver" in window)) return;
+  const items = Array.from(document.querySelectorAll("[data-reveal]"));
+  if (!items.length) return;
+
+  // Anything already on screen stays put; only content below the fold animates.
+  const fold = window.innerHeight;
+  items.forEach((item) => {
+    if (item.getBoundingClientRect().top < fold) item.classList.add("is-in");
+  });
+  document.documentElement.classList.add("reveal-armed");
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-in");
+        observer.unobserve(entry.target);
+      });
+    },
+    { rootMargin: "0px 0px -8% 0px", threshold: 0.12 }
+  );
+  items.forEach((item) => {
+    if (!item.classList.contains("is-in")) observer.observe(item);
+  });
+})();
+
 /* =========================
    Contact Form
 ========================= */
@@ -78,113 +223,4 @@
       if (submitBtn) submitBtn.disabled = false;
     }
   });
-})();
-
-/* =========================
-   Cursor Tenure Timer
-========================= */
-
-function initCursorTenureTimer() {
-  const el = document.getElementById("cursor-tenure-value");
-  if (!el) return;
-
-  // Monday, March 2, 2026 9:00am PT = 17:00 UTC (month is 0-indexed)
-  const start = new Date(Date.UTC(2026, 2, 2, 17, 0, 0, 0));
-  const startMs = start.getTime();
-  if (Number.isNaN(startMs)) {
-    el.textContent = "—";
-    return;
-  }
-
-  function formatPart(n, unit) {
-    if (n === 0) return "";
-    return n + " " + unit + (n === 1 ? "" : "s");
-  }
-
-  function update() {
-    try {
-      const totalMs = Date.now() - startMs;
-      if (totalMs < 0) {
-        el.textContent = "—";
-        return;
-      }
-      const totalSeconds = Math.floor(totalMs / 1000);
-      const seconds = totalSeconds % 60;
-      const totalMinutes = Math.floor(totalSeconds / 60);
-      const minutes = totalMinutes % 60;
-      const totalHours = Math.floor(totalMinutes / 60);
-      const hours = totalHours % 24;
-      const totalDays = Math.floor(totalHours / 24);
-      const years = Math.floor(totalDays / 365);
-      const days = totalDays % 365;
-
-      const parts = [
-        formatPart(years, "year"),
-        formatPart(days, "day"),
-        formatPart(hours, "hour"),
-        formatPart(minutes, "minute"),
-        formatPart(seconds, "second"),
-      ].filter(Boolean);
-
-      el.textContent = parts.length ? parts.join(", ") : "0 seconds";
-    } catch (err) {
-      el.textContent = "—";
-    }
-  }
-
-  update();
-  const intervalId = setInterval(update, 1000);
-
-  function cleanup() {
-    clearInterval(intervalId);
-    if (observer) observer.disconnect();
-    document.removeEventListener("pagehide", onPageHide);
-  }
-
-  function onPageHide() {
-    cleanup();
-  }
-
-  let observer = null;
-  const parent = el.parentNode;
-  if (parent) {
-    observer = new MutationObserver(() => {
-      if (!document.contains(el)) {
-        cleanup();
-      }
-    });
-    observer.observe(parent, { childList: true, subtree: true });
-  }
-  document.addEventListener("pagehide", onPageHide);
-}
-
-function runWhenReady(fn) {
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", fn);
-  } else {
-    fn();
-  }
-}
-runWhenReady(initCursorTenureTimer);
-
-/* =========================
-   Timeline Highlight (viewport-based)
-========================= */
-
-(function timelineHighlight() {
-  const items = document.querySelectorAll(".timeline-item");
-  if (!items.length) return;
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        items.forEach((i) => i.classList.remove("is-active"));
-        entry.target.classList.add("is-active");
-      });
-    },
-    { root: null, threshold: 0.6 }
-  );
-
-  items.forEach((item) => observer.observe(item));
 })();

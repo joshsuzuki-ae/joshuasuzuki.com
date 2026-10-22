@@ -4,64 +4,102 @@
   <meta charset="UTF-8" />
   <meta
     http-equiv="Content-Security-Policy"
-    content="default-src 'none'; base-uri 'none'; form-action 'none'; img-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'"
+    content="default-src 'none'; base-uri 'none'; form-action 'none'; img-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'"
   />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <title>Josh Suzuki — Resume</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#fbfbfa" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0b0b0a" media="(prefers-color-scheme: dark)" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" />
+  <link rel="preload" href="/assets/fonts/host-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/styles.css?v=6" />
 
-  <link rel="stylesheet" href="/styles.css" />
-
-  <!-- Applies saved/preferred theme before first paint to avoid a flash. -->
-  <script src="/theme-init.js"></script>
+  <!-- Applies the saved/preferred theme and the sky accent before first paint. -->
+  <script src="/theme-init.js?v=6"></script>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- ================= HEADER ================= -->
-  <header>
-    <div class="header-inner">
-      <div class="branding">
-        <h1>Josh Suzuki</h1>
-        <p class="tagline">
-          GTM at Cursor · Previously Mid-Market AE at Fastly
-        </p>
-      </div>
-      <nav>
-        <a href="/">Home</a>
-        <a href="/AE%20Resume%20-%202026.docx.pdf" target="_blank" rel="noopener noreferrer">Download PDF</a>
-        <button
-          type="button"
-          class="theme-toggle"
-          data-theme-toggle
-          aria-pressed="false"
-          aria-label="Switch to dark mode"
-          title="Switch to dark mode"
-        >
-          <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="brand" href="/">
+        <span class="mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" focusable="false">
+            <defs>
+              <linearGradient id="mark-sky-header" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" class="mark-zenith" />
+                <stop offset="1" class="mark-horizon" />
+              </linearGradient>
+            </defs>
+            <rect width="32" height="32" fill="url(#mark-sky-header)" />
+            <g class="mark-stars">
+              <circle cx="7.5" cy="7" r="0.9" />
+              <circle cx="19" cy="4.5" r="0.7" />
+              <circle cx="25.5" cy="10.5" r="0.8" />
+            </g>
+            <circle class="mark-sun" cx="16" cy="21.5" r="5.25" />
+            <path class="mark-ground" d="M0 23.2C4.5 21.2 8.5 21.6 12.5 22.8S21.5 21 25.5 21.6 30 22.6 32 22.2V32H0Z" />
           </svg>
-          <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <circle cx="12" cy="12" r="4" />
-            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-          </svg>
-        </button>
+        </span>
+        <span>Josh Suzuki</span>
+      </a>
+
+      <nav class="nav" id="site-nav" aria-label="Primary">
+        <a href="/#work">Work</a>
+        <a href="/#about">About</a>
+        <a href="/resume/index.html" aria-current="page">Resume</a>
+        <a href="/#contact">Contact</a>
       </nav>
+
+      <button
+        type="button"
+        class="icon-button theme-toggle"
+        data-theme-toggle
+        aria-pressed="false"
+        aria-label="Switch to dark mode"
+        title="Switch to dark mode"
+      >
+        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+        </svg>
+      </button>
+
+      <button
+        type="button"
+        class="icon-button menu-toggle"
+        data-menu-toggle
+        aria-expanded="false"
+        aria-controls="site-nav"
+        aria-label="Open menu"
+      >
+        <span class="menu-icon" aria-hidden="true"></span>
+      </button>
     </div>
   </header>
 
-  <!-- ================= MAIN ================= -->
-  <main>
-
-    <!-- SUMMARY -->
-    <section class="section">
-      <div class="section-header">
-        <h2>Summary</h2>
+  <main id="main" class="container">
+    <header class="resume-hero">
+      <h1 class="page-title">Resume.</h1>
+      <p class="lead">
+        GTM at Cursor. Previously Mid-Market Account Executive at Fastly.
+      </p>
+      <div class="actions">
+        <a class="button button-primary" href="/AE%20Resume%20-%202026.docx.pdf" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 2.5v8M4.5 7.5 8 11l3.5-3.5M3 13.5h10" /></svg>
+          Download PDF
+        </a>
+        <a class="button button-secondary" href="/#contact">Get in touch</a>
       </div>
-      <div class="section-body">
+    </header>
+
+    <section class="resume-section" aria-labelledby="summary-title">
+      <h2 id="summary-title">Summary</h2>
+      <div class="resume-body">
         <p>
           GTM at Cursor (March 2026 – Present), working with engineering and platform teams on
           adoption of AI-native developer tooling. Previously a Mid-Market Account Executive at
@@ -73,106 +111,132 @@
       </div>
     </section>
 
-    <!-- EXPERIENCE -->
-    <section class="section">
-      <div class="section-header">
-        <h2>Experience</h2>
-      </div>
-      <div class="section-body">
+    <section class="resume-section" aria-labelledby="experience-title">
+      <h2 id="experience-title">Experience</h2>
+      <div class="resume-body">
+        <article class="role">
+          <div class="role-head">
+            <h3 class="role-org">Cursor</h3>
+            <p class="role-dates">March 2026 – Present</p>
+            <p class="role-title">Go-To-Market</p>
+          </div>
+          <ul>
+            <li>GTM role focused on adoption of AI-native developer tooling with engineering and platform teams.</li>
+            <li>Recently joined; building out account strategy and technical discovery motions for the segment.</li>
+          </ul>
+        </article>
 
-        <p><strong>Cursor</strong> — Go-To-Market</p>
-        <p class="card-meta">March 2026 – Present</p>
-        <ul class="bullet-list">
-          <li>GTM role focused on adoption of AI-native developer tooling with engineering and platform teams.</li>
-          <li>Recently joined; building out account strategy and technical discovery motions for the segment.</li>
-        </ul>
+        <article class="role">
+          <div class="role-head">
+            <h3 class="role-org">Fastly</h3>
+            <p class="role-dates">2021 – February 2026</p>
+            <p class="role-title">Mid-Market Account Executive</p>
+          </div>
+          <ul>
+            <li>Own <strong>$4.2M+ ARR</strong> book across Media &amp; SaaS accounts; achieved <strong>192%</strong> average new bookings attainment and <strong>147%</strong> Net Revenue Retention through structured expansion.</li>
+            <li>Lead complex, multi-stakeholder sales cycles by mapping technical architecture to business outcomes — translating CDN, WAF, and Edge Compute into performance gains, security risk reduction, and cost optimization.</li>
+            <li>Build quantified business cases comparing Fastly to competitors (latency, origin offload, security posture) to justify six-figure platform migrations.</li>
+            <li>Apply MEDDPICC rigor across Engineering, DevOps, Security, Finance, Legal, Procurement, and C-suite; align technical validation with economic buyers and budget cycles.</li>
+            <li>Contributed to sales enablement by documenting technical objection handling and enterprise deal best practices.</li>
+            <li>Build bottom-up TAM models and vertical opportunity analyses that influenced roadmap prioritization and Fastly’s positioning in edge security and compute.</li>
+            <li>Mentor new AEs and SDRs on analytical selling and complex deal execution.</li>
+          </ul>
+        </article>
 
-        <br />
-
-        <p><strong>Fastly</strong> — Mid-Market Account Executive</p>
-        <p class="card-meta">2021 – February 2026</p>
-        <ul class="bullet-list">
-          <li>Own $4.2M+ ARR book across Media & SaaS accounts; achieved 192% average new bookings attainment and 147% Net Revenue Retention through structured expansion.</li>
-          <li>Lead complex, multi-stakeholder sales cycles by mapping technical architecture to business outcomes — translating CDN, WAF, and Edge Compute into performance gains, security risk reduction, and cost optimization.</li>
-          <li>Build quantified business cases comparing Fastly to competitors (latency, origin offload, security posture) to justify six-figure platform migrations.</li>
-          <li>Apply MEDDPICC rigor across Engineering, DevOps, Security, Finance, Legal, Procurement, and C-suite; align technical validation with economic buyers and budget cycles.</li>
-          <li>Contributed to sales enablement by documenting technical objection handling and enterprise deal best practices.</li>
-          <li>Build bottom-up TAM models and vertical opportunity analyses that influenced roadmap prioritization and Fastly’s positioning in edge security and compute.</li>
-          <li>Mentor new AEs and SDRs on analytical selling and complex deal execution.</li>
-        </ul>
-
-        <br />
-
-        <p><strong>ASMI Video Monetization</strong> — Sales & Operations</p>
-        <p class="card-meta">Palo Alto, CA · January 2020 – June 2021</p>
-        <ul class="bullet-list">
-          <li>Joined as employee #3; built foundational sales, forecasting, and operational systems in a zero-to-one environment.</li>
-          <li>Created multi-year revenue forecasting models and financial projections in Excel for pricing strategy, pipeline targets, and investor reporting.</li>
-          <li>Led JIRA implementation across Product and Engineering for sprint planning, customer feedback loops, and workflow reporting; reduced internal meeting volume by 80% and improved cross-functional velocity.</li>
-          <li>Designed KPI dashboards in Tableau to track revenue, customer growth, and sales efficiency.</li>
-          <li>Built outbound motion from scratch with 15+ targeted sequences across AI, OTT, AVOD, FMCG, and e-commerce verticals; contributed to 230% customer growth in six months.</li>
-          <li>Hired and managed interns to scale early sales development.</li>
-        </ul>
-
-      </div>
-    </section>
-
-    <!-- EDUCATION -->
-    <section class="section">
-      <div class="section-header">
-        <h2>Education</h2>
-      </div>
-      <div class="section-body">
-        <p><strong>University of Southern California</strong></p>
-        <p class="card-meta">B.S. in Business Administration · Transferred from University of San Diego, Spring 2018</p>
-        <ul class="bullet-list">
-          <li>Dean’s List, Spring 2019 – Spring 2021</li>
-          <li>Memberships: Troylabs, Trojan Investing Society, USC Rugby Team, Zeta Beta Tau Fraternity</li>
-          <li>University of San Diego, 2017–2018: Division I FCS Football</li>
-        </ul>
+        <article class="role">
+          <div class="role-head">
+            <h3 class="role-org">ASMI Video Monetization</h3>
+            <p class="role-dates">January 2020 – June 2021</p>
+            <p class="role-title">Sales &amp; Operations · Palo Alto, CA</p>
+          </div>
+          <ul>
+            <li>Joined as employee #3; built foundational sales, forecasting, and operational systems in a zero-to-one environment.</li>
+            <li>Created multi-year revenue forecasting models and financial projections in Excel for pricing strategy, pipeline targets, and investor reporting.</li>
+            <li>Led JIRA implementation across Product and Engineering for sprint planning, customer feedback loops, and workflow reporting; reduced internal meeting volume by 80% and improved cross-functional velocity.</li>
+            <li>Designed KPI dashboards in Tableau to track revenue, customer growth, and sales efficiency.</li>
+            <li>Built outbound motion from scratch with 15+ targeted sequences across AI, OTT, AVOD, FMCG, and e-commerce verticals; contributed to 230% customer growth in six months.</li>
+            <li>Hired and managed interns to scale early sales development.</li>
+          </ul>
+        </article>
       </div>
     </section>
 
-    <!-- SKILLS & INTERESTS -->
-    <section class="section">
-      <div class="section-header">
-        <h2>Skills & Interests</h2>
+    <section class="resume-section" aria-labelledby="education-title">
+      <h2 id="education-title">Education</h2>
+      <div class="resume-body">
+        <article class="role">
+          <div class="role-head">
+            <h3 class="role-org">University of Southern California</h3>
+            <p class="role-title">B.S. in Business Administration · Transferred from University of San Diego, Spring 2018</p>
+          </div>
+          <ul>
+            <li>Dean’s List, Spring 2019 – Spring 2021</li>
+            <li>Memberships: Troylabs, Trojan Investing Society, USC Rugby Team, Zeta Beta Tau Fraternity</li>
+            <li>University of San Diego, 2017–2018: Division I FCS Football</li>
+          </ul>
+        </article>
       </div>
-      <div class="section-body">
+    </section>
+
+    <section class="resume-section" aria-labelledby="skills-title">
+      <h2 id="skills-title">Skills &amp; Interests</h2>
+      <div class="resume-body">
         <p><strong>Professional:</strong> Salesforce, AWS (Foundational), Cursor, Claude, MEDDPICC, JIRA, Tableau, JavaScript, Python</p>
         <p><strong>Interests:</strong> Architecture, Bay Area sports, golf, AI, cooking</p>
       </div>
     </section>
-
-    <!-- PDF RESUME (PRESERVED + STYLED) -->
-    <section class="section">
-      <div class="section-header">
-        <h2>Resume (PDF)</h2>
-      </div>
-      <div class="section-body">
-        <p>
-          Prefer a traditional resume format?
-          <a href="/AE%20Resume%20-%202026.docx.pdf" target="_blank" rel="noopener noreferrer">
-            Download the PDF version here.
-          </a>
-        </p>
-      </div>
-    </section>
-
   </main>
 
-  <!-- ================= FOOTER ================= -->
-  <footer>
-    <div class="footer-inner">
-      <p>© <span id="year"></span> Josh Suzuki</p>
-      <div class="footer-links">
-        <a href="mailto:joshuajamessuzuki@gmail.com">Email</a>
-        <a href="https://www.linkedin.com/in/jjsuzuki" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-        <a href="https://github.com/jjsuzuki123" target="_blank" rel="noopener noreferrer">GitHub</a>
+  <footer class="site-footer">
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <a class="brand" href="/">
+          <span class="mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" focusable="false">
+              <defs>
+                <linearGradient id="mark-sky-footer" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" class="mark-zenith" />
+                  <stop offset="1" class="mark-horizon" />
+                </linearGradient>
+              </defs>
+              <rect width="32" height="32" fill="url(#mark-sky-footer)" />
+              <g class="mark-stars">
+                <circle cx="7.5" cy="7" r="0.9" />
+                <circle cx="19" cy="4.5" r="0.7" />
+                <circle cx="25.5" cy="10.5" r="0.8" />
+              </g>
+              <circle class="mark-sun" cx="16" cy="21.5" r="5.25" />
+              <path class="mark-ground" d="M0 23.2C4.5 21.2 8.5 21.6 12.5 22.8S21.5 21 25.5 21.6 30 22.6 32 22.2V32H0Z" />
+            </svg>
+          </span>
+          <span>Josh Suzuki</span>
+        </a>
+        <p class="footer-tagline">Go-to-market at Cursor. Builder after hours.</p>
       </div>
+      <nav class="footer-col" aria-labelledby="footer-site">
+        <h2 id="footer-site">Site</h2>
+        <ul>
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#about">About</a></li>
+          <li><a href="/resume/index.html">Resume</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <nav class="footer-col" aria-labelledby="footer-elsewhere">
+        <h2 id="footer-elsewhere">Elsewhere</h2>
+        <ul>
+          <li><a href="mailto:joshuajamessuzuki@gmail.com">Email</a></li>
+          <li><a href="https://www.linkedin.com/in/jjsuzuki" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+          <li><a href="https://github.com/jjsuzuki123" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="container footer-bottom">
+      <p>© <span id="year">2026</span> Josh Suzuki</p>
+      <p class="colophon">The accent color follows the sun over San Francisco.</p>
     </div>
   </footer>
 
-  <script src="/resume/resume.js"></script>
+  <script src="/script.js?v=6" defer></script>
 </body>
 </html>

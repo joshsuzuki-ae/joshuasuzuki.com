@@ -4,11 +4,13 @@
   <meta charset="UTF-8" />
   <meta
     http-equiv="Content-Security-Policy"
-    content="default-src 'none'; base-uri 'none'; form-action 'self'; img-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src https://8bijlmtfmi.execute-api.us-east-1.amazonaws.com"
+    content="default-src 'none'; base-uri 'none'; form-action 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'; connect-src https://8bijlmtfmi.execute-api.us-east-1.amazonaws.com"
   />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <title>Josh Suzuki</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#fbfbfa" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0b0b0a" media="(prefers-color-scheme: dark)" />
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="/transparent-favicon.svg?v=5" />
@@ -16,309 +18,345 @@
   <link rel="icon" href="/favicon.ico?v=5" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=5" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+  <link rel="preload" href="/assets/fonts/host-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/styles.css?v=6" />
 
-  <link rel="stylesheet" href="styles.css" />
-
-  <!-- Applies saved/preferred theme before first paint to avoid a flash. -->
-  <script src="/theme-init.js"></script>
+  <!-- Applies the saved/preferred theme and the sky accent before first paint. -->
+  <script src="/theme-init.js?v=6"></script>
 </head>
 <body>
-  <header>
-    <div class="header-inner">
-      <div class="branding">
-        <span class="mark" aria-hidden="true">JS</span>
-        <div>
-          <h1>Josh Suzuki</h1>
-          <p class="tagline">Currently at Cursor</p>
-        </div>
-      </div>
-      <nav>
-        <a href="#about">About</a>
-        <a href="#timeline">Timeline</a>
-        <a href="#projects">Projects</a>
-        <a href="#contact">Contact</a>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="brand" href="/">
+        <span class="mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" focusable="false">
+            <defs>
+              <linearGradient id="mark-sky-header" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" class="mark-zenith" />
+                <stop offset="1" class="mark-horizon" />
+              </linearGradient>
+            </defs>
+            <rect width="32" height="32" fill="url(#mark-sky-header)" />
+            <g class="mark-stars">
+              <circle cx="7.5" cy="7" r="0.9" />
+              <circle cx="19" cy="4.5" r="0.7" />
+              <circle cx="25.5" cy="10.5" r="0.8" />
+            </g>
+            <circle class="mark-sun" cx="16" cy="21.5" r="5.25" />
+            <path class="mark-ground" d="M0 23.2C4.5 21.2 8.5 21.6 12.5 22.8S21.5 21 25.5 21.6 30 22.6 32 22.2V32H0Z" />
+          </svg>
+        </span>
+        <span>Josh Suzuki</span>
+      </a>
+
+      <nav class="nav" id="site-nav" aria-label="Primary">
+        <a href="/#work">Work</a>
+        <a href="/#about">About</a>
         <a href="/resume/index.html">Resume</a>
-        <a href="/admin/index.html">Admin</a>
-        <button
-          type="button"
-          class="theme-toggle"
-          data-theme-toggle
-          aria-pressed="false"
-          aria-label="Switch to dark mode"
-          title="Switch to dark mode"
-        >
-          <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-          </svg>
-          <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <circle cx="12" cy="12" r="4" />
-            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-          </svg>
-        </button>
+        <a href="/#contact">Contact</a>
       </nav>
+
+      <button
+        type="button"
+        class="icon-button theme-toggle"
+        data-theme-toggle
+        aria-pressed="false"
+        aria-label="Switch to dark mode"
+        title="Switch to dark mode"
+      >
+        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+        </svg>
+      </button>
+
+      <button
+        type="button"
+        class="icon-button menu-toggle"
+        data-menu-toggle
+        aria-expanded="false"
+        aria-controls="site-nav"
+        aria-label="Open menu"
+      >
+        <span class="menu-icon" aria-hidden="true"></span>
+      </button>
     </div>
   </header>
 
-  <main>
-    <!-- HERO -->
-    <section class="hero">
-      <div class="hero-text">
-        <p class="eyebrow">Go-To-Market · San Francisco</p>
-        <h2>
-          I work on the go-to-market team at <span class="hero-highlight">Cursor</span>.
-        </h2>
-        <p class="hero-subtitle">
-          I help developers and technical teams get the most out of their tools. Previously
-          five years at Fastly. Outside of work: sports and cooking.
-        </p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="#contact">Get in touch</a>
-          <a class="btn btn-ghost" href="/resume/index.html">Resume</a>
-        </div>
+  <main id="main">
+    <section class="container hero" aria-labelledby="hero-title">
+      <p class="chip">
+        <span class="chip-dot" aria-hidden="true"></span>
+        <span>San Francisco</span>
+        <span class="chip-clock" data-sf-clock hidden><span aria-hidden="true">·</span> <time></time></span>
+      </p>
+      <h1 class="display" id="hero-title">
+        <span class="display-line"><span class="nowrap">Go<span class="hyphen">-</span>to<span class="hyphen">-</span>market</span> at Cursor.</span>
+        <span class="display-line display-dim">Builder <span class="sky-underline">after hours.</span></span>
+      </h1>
+      <p class="lead">
+        I help engineering and platform teams adopt AI-native development. Before Cursor, I
+        spent five years at Fastly selling CDN, edge compute, and security to technical buyers.
+        I also design, build, and run my own apps.
+      </p>
+      <div class="actions">
+        <a class="button button-primary" href="#contact">Get in touch</a>
+        <a class="button button-secondary" href="/resume/index.html">Resume</a>
       </div>
     </section>
 
-    <!-- ABOUT -->
-    <section id="about" class="section">
-      <div class="section-header">
-        <h2>About</h2>
-      </div>
-      <div class="section-body">
-        <p>
-          I work with developers, engineering leaders, and platform teams on how modern developer
-          tools fit into real workflows. I like the problems where technical depth and clear
-          communication both matter.
-        </p>
-        <p>
-          Before Cursor, I spent five years at Fastly across go-to-market roles, working with
-          customers on CDN, edge compute, and security products.
-        </p>
-        <p><strong>What I focus on:</strong></p>
-        <ul class="bullet-list">
-          <li>Helping technical teams evaluate and adopt new tools.</li>
-          <li>Managing complex sales cycles without losing the technical details.</li>
-          <li>Building small tools and automations to cut manual work.</li>
-          <li>Working across sales, product, and engineering.</li>
-        </ul>
-      </div>
+    <section class="container" aria-label="Highlights">
+      <ul class="stats">
+        <li data-reveal>
+          <span class="stat-value">$4.2M</span>
+          <span class="stat-label">ARR book managed at Fastly</span>
+        </li>
+        <li data-reveal>
+          <span class="stat-value">192%</span>
+          <span class="stat-label">Average new-bookings attainment</span>
+        </li>
+        <li data-reveal>
+          <span class="stat-value">147%</span>
+          <span class="stat-label">Net revenue retention</span>
+        </li>
+        <li data-reveal>
+          <span class="stat-value">#3</span>
+          <span class="stat-label">Employee at ASMI, a zero-to-one startup</span>
+        </li>
+      </ul>
     </section>
 
-    <!-- TIMELINE -->
-    <section id="timeline" class="section">
-      <div class="section-header">
-        <h2>Timeline</h2>
-      </div>
-
-      <div class="section-body">
-        <p class="timeline-intro">
-          A short overview of my background.
+    <section id="work" class="container section" aria-labelledby="work-title">
+      <div class="section-head" data-reveal>
+        <h2 class="section-title" id="work-title">Things I build.</h2>
+        <p class="section-sub">
+          Apps I design, build, and run myself, shipped from the same repo and pipeline as
+          this site.
         </p>
-
-        <div class="timeline-shell" aria-label="Career timeline">
-          <div class="timeline-line" aria-hidden="true"></div>
-
-          <div class="timeline-item" data-type="life">
-            <div class="timeline-dot" aria-hidden="true"></div>
-            <div class="timeline-card">
-              <div class="timeline-top">
-                <div class="timeline-when">1999</div>
-                <div class="timeline-tag">Life</div>
-              </div>
-              <h3 class="timeline-title">Born</h3>
-              <p class="timeline-subtitle">San Francisco, CA</p>
-            </div>
-          </div>
-
-          <div class="timeline-item" data-type="education">
-            <div class="timeline-dot" aria-hidden="true"></div>
-            <div class="timeline-card">
-              <div class="timeline-top">
-                <div class="timeline-when">2013–2017</div>
-                <div class="timeline-tag">Education</div>
-              </div>
-              <h3 class="timeline-title">Sacred Heart Preparatory</h3>
-              <p class="timeline-subtitle">High School · Graduated 2017</p>
-            </div>
-          </div>
-
-          <div class="timeline-item" data-type="education">
-            <div class="timeline-dot" aria-hidden="true"></div>
-            <div class="timeline-card">
-              <div class="timeline-top">
-                <div class="timeline-when">2017–2018</div>
-                <div class="timeline-tag">Education</div>
-              </div>
-              <h3 class="timeline-title">University of San Diego</h3>
-              <p class="timeline-subtitle">NCAA Division I Football</p>
-            </div>
-          </div>
-
-          <div class="timeline-item" data-type="education">
-            <div class="timeline-dot" aria-hidden="true"></div>
-            <div class="timeline-card">
-              <div class="timeline-top">
-                <div class="timeline-when">2018–2021</div>
-                <div class="timeline-tag">Education</div>
-              </div>
-              <h3 class="timeline-title">University of Southern California</h3>
-              <p class="timeline-subtitle">
-                B.S. in Business Administration · 2021<br />
-                Transferred Fall 2018
-              </p>
-            </div>
-          </div>
-
-          <div class="timeline-item" data-type="work">
-            <div class="timeline-dot" aria-hidden="true"></div>
-            <div class="timeline-card">
-              <div class="timeline-top">
-                <div class="timeline-when">2021–2026</div>
-                <div class="timeline-tag">Work</div>
-              </div>
-              <h3 class="timeline-title">Fastly</h3>
-              <p class="timeline-subtitle">Go-To-Market Roles</p>
-              <ul class="bullet-list">
-                <li>Sales Development Representative (2021–2022)</li>
-                <li>SMB Account Executive (2022–2023)</li>
-                <li>Mid-Market Account Executive (2023–2026)</li>
-              </ul>
-              <p class="timeline-subtitle">
-                Worked with media, SaaS, and infrastructure customers across CDN, edge compute,
-                and security products.
-              </p>
-            </div>
-          </div>
-
-          <div class="timeline-item" data-type="work-cursor">
-            <div class="timeline-dot" aria-hidden="true"></div>
-            <div class="timeline-card">
-              <div class="timeline-top">
-                <div class="timeline-when">2026–Present</div>
-                <div class="timeline-tag">Cursor</div>
-              </div>
-              <p class="timeline-tenure-timer" id="cursor-tenure-timer" aria-live="polite" aria-label="Time at Cursor">
-                <span class="timeline-tenure-label">Time at Cursor: </span>
-                <span id="cursor-tenure-value">—</span>
-              </p>
-              <h3 class="timeline-title">Cursor</h3>
-              <p class="timeline-subtitle">Go-To-Market</p>
-              <p class="timeline-subtitle">
-                Working with engineering and platform teams on adopting AI-native developer tools.
-              </p>
-            </div>
-          </div>
-
-        </div>
       </div>
-    </section>
 
-    <!-- PROJECTS -->
-    <section id="projects" class="section">
-      <div class="section-header">
-        <h2>Projects</h2>
-      </div>
-      <div class="section-body projects-grid">
-        <a class="card card-link" href="/fantasy/index.html">
-          <h3>RosterLab</h3>
-          <p class="card-meta">Fantasy Baseball · Trade Modeling · ESPN League Data</p>
-          <p>
-            A roster and category analyzer that finds realistic trade matches, grades custom
-            offers, and shows the data behind each player value.
-          </p>
-        </a>
-
-        <a class="card card-link" href="/sunset/index.html">
-          <h3>Afterglow</h3>
-          <p class="card-meta">Live Weather · Forecast Modeling · Vanilla JavaScript</p>
-          <p>
-            A location-based sunset quality forecast built from real cloud, visibility,
-            moisture, precipitation, and aerosol data.
-          </p>
-        </a>
-
-        <article class="card">
-          <h3>This Website</h3>
-          <p class="card-meta">S3 · CloudFront · Lambda · API Gateway · DynamoDB</p>
-          <p>
-            A full-stack personal site on a small serverless backend. I use it to experiment with
-            infrastructure and deployment.
-          </p>
+      <div class="tiles">
+        <article class="tile tile-rosterlab" data-reveal>
+          <div class="tile-copy">
+            <p class="tile-kicker">Fantasy baseball</p>
+            <h3 class="tile-title">RosterLab</h3>
+            <p class="tile-text">
+              Finds realistic trades for your league and shows the math behind every player value.
+            </p>
+            <a class="arrow-link tile-link" href="/fantasy/index.html">
+              Open RosterLab
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 8h10M9 4l4 4-4 4" /></svg>
+            </a>
+          </div>
+          <figure class="tile-media">
+            <img
+              src="/assets/work/rosterlab-trade-finder-1200.webp"
+              srcset="/assets/work/rosterlab-trade-finder-640.webp 640w, /assets/work/rosterlab-trade-finder-860.webp 860w, /assets/work/rosterlab-trade-finder-1200.webp 1200w"
+              sizes="(max-width: 960px) 100vw, 640px"
+              width="1200"
+              height="797"
+              loading="lazy"
+              decoding="async"
+              alt="RosterLab's trade finder, ranking realistic trades for a demo league by partner interest."
+            />
+          </figure>
         </article>
 
-        <article class="card">
-          <h3>GTM Automations</h3>
-          <p class="card-meta">Chrome Extensions · APIs · Outreach · Enrichment</p>
-          <p>
-            Small scripts and extensions that connect enrichment, sequencing, and CRM tools to
-            reduce manual work.
-          </p>
-        </article>
-
-        <article class="card">
-          <h3>Infra &amp; Performance Lab</h3>
-          <p class="card-meta">CDNs · WAF · Edge Compute · Cost Modeling</p>
-          <p>
-            Hands-on comparisons of CDN, WAF, and edge compute platforms, focused on performance
-            and cost tradeoffs.
-          </p>
+        <article class="tile tile-afterglow" data-reveal>
+          <div class="tile-copy">
+            <p class="tile-kicker">Sunset forecast</p>
+            <h3 class="tile-title">Afterglow</h3>
+            <p class="tile-text">
+              Scores tonight's sunset from live cloud, visibility, humidity, and aerosol data.
+            </p>
+            <a class="arrow-link tile-link" href="/sunset/index.html">
+              Check tonight's sky
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 8h10M9 4l4 4-4 4" /></svg>
+            </a>
+            <p class="sky-caption" data-sky-caption hidden></p>
+          </div>
+          <figure class="tile-media">
+            <img
+              src="/assets/work/afterglow-forecast-1100.webp"
+              srcset="/assets/work/afterglow-forecast-600.webp 600w, /assets/work/afterglow-forecast-780.webp 780w, /assets/work/afterglow-forecast-1100.webp 1100w"
+              sizes="(max-width: 760px) 80vw, (max-width: 960px) 64vw, 420px"
+              width="1100"
+              height="975"
+              loading="lazy"
+              decoding="async"
+              alt="Afterglow's forecast card for San Francisco: sunset quality 96 out of 100, rated Exceptional."
+            />
+          </figure>
         </article>
       </div>
+
+      <ul class="more" aria-label="Other projects">
+        <li data-reveal>
+          <a class="more-row" href="/fantasy/football/index.html">
+            <span class="more-title">Football trade calculator</span>
+            <span class="more-desc">Redraft trade values for fantasy football, part of RosterLab.</span>
+            <span class="more-meta arrow-link">Open
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 8h10M9 4l4 4-4 4" /></svg>
+            </span>
+          </a>
+        </li>
+        <li data-reveal>
+          <div class="more-row">
+            <span class="more-title">This website</span>
+            <span class="more-desc">Hand-written HTML and CSS on S3 and CloudFront, with Lambda, API Gateway, and DynamoDB behind the contact form.</span>
+            <span class="more-meta">AWS serverless</span>
+          </div>
+        </li>
+        <li data-reveal>
+          <div class="more-row">
+            <span class="more-title">GTM automations</span>
+            <span class="more-desc">Chrome extensions and scripts that connect enrichment, sequencing, and CRM tools.</span>
+            <span class="more-meta">Chrome, APIs</span>
+          </div>
+        </li>
+        <li data-reveal>
+          <div class="more-row">
+            <span class="more-title">Infra and performance lab</span>
+            <span class="more-desc">Hands-on comparisons of CDN, WAF, and edge compute platforms, focused on performance and cost.</span>
+            <span class="more-meta">CDN, WAF, edge</span>
+          </div>
+        </li>
+      </ul>
     </section>
 
-    <!-- CONTACT -->
-    <section id="contact" class="section">
-      <div class="section-header">
-        <h2>Contact</h2>
+    <section id="about" class="container section" aria-labelledby="about-title">
+      <div class="section-head" data-reveal>
+        <h2 class="section-title" id="about-title">How I got here.</h2>
       </div>
-      <div class="section-body contact-layout">
-        <div class="contact-copy">
-          <p>
-            If you'd like to talk about roles, projects, or anything else, feel free to reach out.
-          </p>
-          <p class="contact-note">
-            Happy to talk sports too.
-          </p>
-        </div>
-        <form id="contact-form" class="contact-form" autocomplete="on" novalidate>
-          <label>
-            Name
+      <p class="intro" data-reveal>
+        <strong>I've spent my career where technical products meet the people who buy them.</strong>
+        Five years at Fastly, from SDR to mid-market account executive. Employee #3 at a
+        video-monetization startup before that. And before that, Division I football at the
+        University of San Diego, then a business degree at USC. Outside work: Bay Area sports,
+        golf, and cooking.
+      </p>
+
+      <ol class="career" aria-label="Career">
+        <li data-reveal>
+          <span class="career-when">2026 – now</span>
+          <span class="career-org">Cursor</span>
+          <span class="career-role">Go-to-market</span>
+        </li>
+        <li data-reveal>
+          <span class="career-when">2021 – 2026</span>
+          <span class="career-org">Fastly</span>
+          <span class="career-role">Mid-market AE, promoted from SDR and SMB AE</span>
+        </li>
+        <li data-reveal>
+          <span class="career-when">2020 – 2021</span>
+          <span class="career-org">ASMI Video Monetization</span>
+          <span class="career-role">Sales and operations, employee #3</span>
+        </li>
+        <li data-reveal>
+          <span class="career-when">2018 – 2021</span>
+          <span class="career-org">University of Southern California</span>
+          <span class="career-role">B.S. in Business Administration</span>
+        </li>
+        <li data-reveal>
+          <span class="career-when">2017 – 2018</span>
+          <span class="career-org">University of San Diego</span>
+          <span class="career-role">NCAA Division I football</span>
+        </li>
+      </ol>
+    </section>
+
+    <section id="contact" class="container section contact" aria-labelledby="contact-title">
+      <h2 class="section-title" id="contact-title" data-reveal>Say hello.</h2>
+      <p class="contact-sub" data-reveal>
+        I read every message. Cursor, go-to-market, side projects, and Bay Area sports are all
+        fair game.
+      </p>
+
+      <form id="contact-form" class="composer" autocomplete="on" novalidate data-reveal>
+        <label class="visually-hidden" for="contact-message">Message</label>
+        <textarea id="contact-message" name="message" rows="3" required maxlength="5000" placeholder="Write a message…"></textarea>
+        <div class="composer-row">
+          <label class="field">
+            <span class="field-label">Name</span>
             <input type="text" name="name" required maxlength="100" autocomplete="name" placeholder="Your name" />
           </label>
-          <label>
-            Email
+          <label class="field">
+            <span class="field-label">Email</span>
             <input type="email" name="email" required maxlength="200" autocomplete="email" placeholder="you@example.com" />
           </label>
+          <button type="submit" class="send" aria-label="Send message" title="Send message">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M10 16V4M5 9l5-5 5 5" /></svg>
+          </button>
+        </div>
+        <div class="hp-field" aria-hidden="true">
           <label>
-            Message
-            <textarea name="message" rows="4" required maxlength="5000" placeholder="Your message"></textarea>
+            Website
+            <input type="text" name="website" tabindex="-1" autocomplete="off" />
           </label>
-          <div class="hp-field" aria-hidden="true">
-            <label>
-              Website
-              <input type="text" name="website" tabindex="-1" autocomplete="off" />
-            </label>
-          </div>
-          <button type="submit">Send</button>
-          <p id="contact-status" class="contact-status"></p>
-        </form>
-      </div>
+        </div>
+      </form>
+      <p id="contact-status" class="contact-status"></p>
+      <p class="contact-alt">
+        Or email <a href="mailto:joshuajamessuzuki@gmail.com">joshuajamessuzuki@gmail.com</a>
+      </p>
     </section>
   </main>
 
-  <footer>
-    <div class="footer-inner">
-      <p>© <span id="year"></span> Josh Suzuki</p>
-      <div class="footer-links">
-        <a href="mailto:joshuajamessuzuki@gmail.com">Email</a>
-        <a href="https://www.linkedin.com/in/jjsuzuki" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-        <a href="https://github.com/jjsuzuki123" target="_blank" rel="noopener noreferrer">GitHub</a>
+  <footer class="site-footer">
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <a class="brand" href="/">
+          <span class="mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" focusable="false">
+              <defs>
+                <linearGradient id="mark-sky-footer" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" class="mark-zenith" />
+                  <stop offset="1" class="mark-horizon" />
+                </linearGradient>
+              </defs>
+              <rect width="32" height="32" fill="url(#mark-sky-footer)" />
+              <g class="mark-stars">
+                <circle cx="7.5" cy="7" r="0.9" />
+                <circle cx="19" cy="4.5" r="0.7" />
+                <circle cx="25.5" cy="10.5" r="0.8" />
+              </g>
+              <circle class="mark-sun" cx="16" cy="21.5" r="5.25" />
+              <path class="mark-ground" d="M0 23.2C4.5 21.2 8.5 21.6 12.5 22.8S21.5 21 25.5 21.6 30 22.6 32 22.2V32H0Z" />
+            </svg>
+          </span>
+          <span>Josh Suzuki</span>
+        </a>
+        <p class="footer-tagline">Go-to-market at Cursor. Builder after hours.</p>
       </div>
+      <nav class="footer-col" aria-labelledby="footer-site">
+        <h2 id="footer-site">Site</h2>
+        <ul>
+          <li><a href="/#work">Work</a></li>
+          <li><a href="/#about">About</a></li>
+          <li><a href="/resume/index.html">Resume</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <nav class="footer-col" aria-labelledby="footer-elsewhere">
+        <h2 id="footer-elsewhere">Elsewhere</h2>
+        <ul>
+          <li><a href="mailto:joshuajamessuzuki@gmail.com">Email</a></li>
+          <li><a href="https://www.linkedin.com/in/jjsuzuki" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+          <li><a href="https://github.com/jjsuzuki123" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="container footer-bottom">
+      <p>© <span id="year">2026</span> Josh Suzuki</p>
+      <p class="colophon">The accent color follows the sun over San Francisco.</p>
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="/script.js?v=6" defer></script>
 </body>
 </html>
