@@ -209,6 +209,7 @@ jobs:
             --exclude "fantasy-backend/*" \
             --exclude "fantasy-insights/*" \
             --exclude "_deploy/*" \
+            --exclude "docs/*" \
             --exclude "scripts/*" \
             --exclude "permissions-policy.json" \
             --exclude "permissions-policy-expanded.json" \

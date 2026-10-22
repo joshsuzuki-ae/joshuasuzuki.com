@@ -12,7 +12,7 @@
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
         },
         "StringLike": {
-          "token.actions.githubusercontent.com:sub": "repo:jjsuzuki123/joshuasuzuki.com:ref:refs/heads/main"
+          "token.actions.githubusercontent.com:sub": "repo:joshsuzuki-ae@272345758/joshuasuzuki.com@1121822714:ref:refs/heads/main"
         }
       }
     }

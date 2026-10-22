@@ -73,6 +73,7 @@ aws s3 sync . "s3://${S3_BUCKET}" \
   --exclude "*/node_modules/*" \
   --exclude "fantasy/config.js" \
   --exclude "_deploy/*" \
+  --exclude "docs/*" \
   --exclude "scripts/*" \
   --exclude "permissions-policy.json" \
   --exclude "permissions-policy-expanded.json" \
