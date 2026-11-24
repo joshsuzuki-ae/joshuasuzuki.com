@@ -46,6 +46,7 @@ node scripts/fantasy-private-import.test.js
 node scripts/fantasy-relay-client.test.js
 node --test scripts/fantasy-football-trade.test.js
 node scripts/sunset-score-engine.test.js
+node scripts/site-security.test.js
 
 echo "==> ESPN connector"
 npm run check --prefix extensions/rosterlab-espn

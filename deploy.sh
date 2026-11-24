@@ -59,8 +59,14 @@ aws s3 sync . "s3://${S3_BUCKET}" \
   --exclude ".git/*" \
   --exclude ".github/*" \
   --exclude ".cursor/*" \
+  --exclude ".githooks/*" \
+  --exclude ".gitignore" \
   --exclude ".aws-sam/*" \
   --exclude ".DS_Store" \
+  --exclude "*.md" \
+  --exclude "package.json" \
+  --exclude "package-lock.json" \
+  --exclude "dist/*" \
   --exclude "deploy.sh" \
   --exclude "debug-pdf-fetch.sh" \
   --exclude ".env" \
@@ -81,8 +87,8 @@ aws s3 sync . "s3://${S3_BUCKET}" \
   --profile "${AWS_PROFILE}" \
   --region "${AWS_REGION}"
 
-# `aws s3 sync --delete` skips excluded keys for deletion too, so excluding the
-# IAM policy files does not remove copies a prior deploy may have published.
+# `aws s3 sync --delete` skips excluded keys for deletion too, so excluding
+# these files does not remove copies a prior deploy may have published.
 # Delete them explicitly so they can never remain publicly reachable.
 for infra_object in \
   "permissions-policy.json" \
@@ -92,6 +98,16 @@ for infra_object in \
     --profile "${AWS_PROFILE}" \
     --region "${AWS_REGION}" >/dev/null 2>&1 || true
 done
+aws s3 rm "s3://${S3_BUCKET}/" --recursive \
+  --exclude "*" \
+  --include "*.md" \
+  --include ".githooks/*" \
+  --include ".gitignore" \
+  --include "package.json" \
+  --include "package-lock.json" \
+  --include "dist/*" \
+  --profile "${AWS_PROFILE}" \
+  --region "${AWS_REGION}"
 
 aws s3 cp "${FANTASY_CONFIG_FILE}" "s3://${S3_BUCKET}/fantasy/config.js" \
   --cache-control "no-cache, no-store, must-revalidate" \
