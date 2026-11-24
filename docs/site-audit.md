@@ -59,7 +59,7 @@ A few notes on these numbers:
 - **Where:** all pages, all viewports.
 - **What's wrong:** The Jul 22 deploy of `794962e` ([run 29938873411](https://github.com/joshsuzuki-ae/joshuasuzuki.com/actions/runs/29938873411)) failed at "Configure AWS credentials (OIDC)" with `Not authorized to perform sts:AssumeRoleWithWebIdentity`. Nothing has shipped since the Jul 16 build (`bb1682d`), so the dark-mode work isn't live. Any fix from this audit won't ship either until this is resolved.
 - **Cause:** The deploy role's trust policy only accepts GitHub tokens from the old owner. As of `794962e`, `trust-policy.json:15` allows `repo:jjsuzuki123/joshuasuzuki.com:ref:refs/heads/main`. Since the transfer, GitHub issues this repo immutable OIDC subjects that include the owner and repo IDs: the repo's OIDC settings report `use_immutable_subject: true`. Tokens now carry `repo:joshsuzuki-ae@272345758/joshuasuzuki.com@1121822714:ref:refs/heads/main`, so swapping only the owner name in the policy would still fail.
-- **Fix:** Change the `sub` value on the `GitHubActionsDeployPersonalSite` role. Use AWS CloudShell (below), or the console: IAM, Roles, `GitHubActionsDeployPersonalSite`, Trust relationships, Edit. Then re-run the failed deploy (it supports `workflow_dispatch`). The repo copy in `trust-policy.json` has the new value. Consider a failure notification so this doesn't go unnoticed again.
+- **Fix:** Change the `sub` value on the `GitHubActionsDeployPersonalSite` role. Use AWS CloudShell (below), or the console: IAM, Roles, `GitHubActionsDeployPersonalSite`, Trust relationships, Edit. Then re-run the failed deploy (it supports `workflow_dispatch`). Consider a failure notification so this doesn't go unnoticed again.
 
 ```bash
 ROLE=GitHubActionsDeployPersonalSite
