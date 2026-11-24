@@ -67,6 +67,16 @@ body {
   to { filter: brightness(1.15); }
 }
 
+.space {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
 .stage {
   position: relative;
   display: grid;

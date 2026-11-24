@@ -34,6 +34,7 @@ node --check admin-backend/admin-messages/index.js
 node --check theme-init.js
 node --check script.js
 node --check home.js
+node --check space.js
 
 echo "==> Unit tests"
 node scripts/fantasy-trade-engine.test.js
