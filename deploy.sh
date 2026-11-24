@@ -155,6 +155,30 @@ for key in \
   fi
 done
 
+# CloudFront/S3 has no "index.html for subfolders" behavior, so directory
+# URLs need an HTML object at both `path` and `path/`.
+for key in "resume" "resume/"; do
+  aws s3api put-object \
+    --bucket "${S3_BUCKET}" \
+    --key "${key}" \
+    --body "resume/index.html" \
+    --cache-control "no-cache, no-store, must-revalidate" \
+    --content-type "text/html; charset=utf-8" \
+    --profile "${AWS_PROFILE}" \
+    --region "${AWS_REGION}" >/dev/null
+done
+
+for key in "admin" "admin/"; do
+  aws s3api put-object \
+    --bucket "${S3_BUCKET}" \
+    --key "${key}" \
+    --body "admin/index.html" \
+    --cache-control "no-cache, no-store, must-revalidate" \
+    --content-type "text/html; charset=utf-8" \
+    --profile "${AWS_PROFILE}" \
+    --region "${AWS_REGION}" >/dev/null
+done
+
 for key in "sunset" "sunset/"; do
   aws s3api put-object \
     --bucket "${S3_BUCKET}" \
