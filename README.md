@@ -34,9 +34,10 @@ GitHub Actions runs the same script on every pull request
 (`.github/workflows/deploy.yml`) and only assumes the AWS role after
 verify + `sam validate` succeed.
 
-If deploy fails with `AssumeRoleWithWebIdentity`, apply
-`trust-policy.json` to IAM role `GitHubActionsDeployPersonalSite`. The
-`sub` claim must be `repo:joshsuzuki-ae/joshuasuzuki.com:ref:refs/heads/main`.
+If deploy fails with `AssumeRoleWithWebIdentity`, check the trust policy on
+IAM role `GitHubActionsDeployPersonalSite`. The repo uses GitHub's immutable
+OIDC subjects, so the `sub` claim must be
+`repo:joshsuzuki-ae@272345758/joshuasuzuki.com@1121822714:ref:refs/heads/main`.
 
 Mark **CI / verify** as a required status check on `main` (Settings →
 Branches). The GitHub API from this environment cannot set branch
