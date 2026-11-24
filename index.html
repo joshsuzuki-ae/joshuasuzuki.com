@@ -20,25 +20,15 @@
   <link rel="icon" href="/favicon.ico?v=5" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=5" />
 
-  <link rel="stylesheet" href="/home.css?v=3" />
+  <link rel="stylesheet" href="/home.css?v=4" />
 </head>
 <body>
-  <div class="sky" aria-hidden="true">
-    <div class="stars" data-stars></div>
-  </div>
+  <canvas class="space" data-space aria-hidden="true"></canvas>
 
   <main class="stage">
     <h1 class="sr-only">Josh Suzuki</h1>
 
     <div class="orbit" data-orbit>
-      <div class="window" aria-hidden="true">
-        <div class="horizon-glow"></div>
-        <div class="sun" data-sun></div>
-        <div class="sea">
-          <div class="glint" data-glint></div>
-        </div>
-      </div>
-
       <svg class="ring" data-ring viewBox="0 0 500 500" role="group" aria-label="I'm Josh Suzuki. I work on go-to-market at Cursor (acquired by SpaceX). Before that, five years at Fastly.">
         <defs>
           <path id="ring-path" d="M 40,250 a 210,210 0 1,1 420,0 a 210,210 0 1,1 -420,0" />
@@ -55,11 +45,12 @@
     <span class="corner-count" data-corner-count></span>
   </div>
 
-  <p class="caption" aria-live="off">
-    <span data-caption>the sky over san francisco</span>
-    <span class="hint">scroll to move the sun</span>
+  <p class="caption" data-caption aria-live="off">
+    <span class="status" data-status hidden></span>
+    <span class="hint" data-hint>throw the ring</span>
   </p>
 
-  <script src="/home.js?v=3"></script>
+  <script src="/space.js?v=2" defer></script>
+  <script src="/home.js?v=4"></script>
 </body>
 </html>
