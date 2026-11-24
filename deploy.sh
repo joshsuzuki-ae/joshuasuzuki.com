@@ -239,6 +239,30 @@ for key in "fantasy/football" "fantasy/football/"; do
     --region "${AWS_REGION}" >/dev/null
 done
 
+# The admin login is a single shared password, so cap request rates on the
+# whole stage and more tightly on the login route.
+ADMIN_API_ID="nk1byjfld0"
+if aws apigatewayv2 get-api --api-id "${ADMIN_API_ID}" \
+    --profile "${AWS_PROFILE}" --region "${AWS_REGION}" >/dev/null 2>&1; then
+  LOGIN_ROUTE="$(aws apigatewayv2 get-routes --api-id "${ADMIN_API_ID}" \
+    --query "Items[?ends_with(RouteKey, ' /admin/login')].RouteKey | [0]" --output text \
+    --profile "${AWS_PROFILE}" --region "${AWS_REGION}")"
+  for stage in $(aws apigatewayv2 get-stages --api-id "${ADMIN_API_ID}" \
+      --query 'Items[].StageName' --output text \
+      --profile "${AWS_PROFILE}" --region "${AWS_REGION}"); do
+    args=(--api-id "${ADMIN_API_ID}" --stage-name "${stage}"
+      --default-route-settings 'ThrottlingBurstLimit=10,ThrottlingRateLimit=5')
+    if [[ -n "${LOGIN_ROUTE}" && "${LOGIN_ROUTE}" != "None" ]]; then
+      args+=(--route-settings "{\"${LOGIN_ROUTE}\":{\"ThrottlingBurstLimit\":3,\"ThrottlingRateLimit\":1}}")
+    fi
+    aws apigatewayv2 update-stage "${args[@]}" \
+      --profile "${AWS_PROFILE}" --region "${AWS_REGION}" >/dev/null ||
+      echo "WARNING: could not throttle ${ADMIN_API_ID} stage ${stage}."
+  done
+else
+  echo "WARNING: admin API ${ADMIN_API_ID} not found; skipping throttling."
+fi
+
 aws cloudfront create-invalidation \
   --distribution-id "${CF_DISTRIBUTION_ID}" \
   --paths "/*" \

@@ -363,6 +363,31 @@ jobs:
             echo "Skipping AE Resume - 2026.docx.pdf (not found)"
           fi
 
+      - name: Throttle the admin API
+        run: |
+          set -euo pipefail
+          # The admin login is a single shared password, so cap request rates
+          # on the whole stage and more tightly on the login route.
+          ADMIN_API_ID="nk1byjfld0"
+          if ! aws apigatewayv2 get-api --api-id "${ADMIN_API_ID}" >/dev/null 2>&1; then
+            echo "::warning::Admin API ${ADMIN_API_ID} not found; skipping throttling."
+            exit 0
+          fi
+          LOGIN_ROUTE="$(aws apigatewayv2 get-routes --api-id "${ADMIN_API_ID}" \
+            --query "Items[?ends_with(RouteKey, ' /admin/login')].RouteKey | [0]" --output text)"
+          for stage in $(aws apigatewayv2 get-stages --api-id "${ADMIN_API_ID}" --query 'Items[].StageName' --output text); do
+            args=(--api-id "${ADMIN_API_ID}" --stage-name "${stage}"
+              --default-route-settings 'ThrottlingBurstLimit=10,ThrottlingRateLimit=5')
+            if [[ -n "${LOGIN_ROUTE}" && "${LOGIN_ROUTE}" != "None" ]]; then
+              args+=(--route-settings "{\"${LOGIN_ROUTE}\":{\"ThrottlingBurstLimit\":3,\"ThrottlingRateLimit\":1}}")
+            fi
+            if aws apigatewayv2 update-stage "${args[@]}" >/dev/null; then
+              echo "Throttled ${ADMIN_API_ID} stage ${stage} (login route: ${LOGIN_ROUTE})"
+            else
+              echo "::warning::Could not throttle ${ADMIN_API_ID} stage ${stage}."
+            fi
+          done
+
       - name: CloudFront invalidation
         run: |
           aws cloudfront create-invalidation \
