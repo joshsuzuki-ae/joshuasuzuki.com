@@ -33,6 +33,7 @@
   const JELLY_DAMPING = 13;
   const STRETCH = 0.000035; // stretch along the direction of travel per px/s
   const MAX_STRETCH = 0.14;
+  const IDLE_SPIN = 4; // deg/s, slow orbit so the ring text stays readable at rest
 
   const root = document.documentElement;
   const orbit = document.querySelector("[data-orbit]");
@@ -243,6 +244,7 @@
   let suppressClick = false;
   let saver = null;
   let lastActivity = performance.now();
+  let hoveringLink = false;
 
   const storage = (() => {
     try {
@@ -316,14 +318,24 @@
     ball.ey = clamp(ball.ey + ball.evy * dt, -MAX_SQUASH, MAX_SQUASH);
   }
 
-  // Spin decays, then the ring springs back to upright so it's readable at rest.
-  function stepSpin(dt, settle) {
-    ball.spin *= Math.exp(-1.4 * dt);
-    if (settle || Math.abs(ball.spin) < 60) {
+  // Spin eases toward `drift` (deg/s). `null` springs upright; `false` decays in flight only.
+  function stepSpin(dt, drift) {
+    if (drift === null) {
+      ball.spin *= Math.exp(-1.4 * dt);
       const upright = Math.round(ball.angle / 360) * 360;
       ball.spin = lerp(ball.spin, (upright - ball.angle) * 4, ease(8, dt));
+    } else if (drift === false) {
+      ball.spin *= Math.exp(-1.4 * dt);
+    } else {
+      ball.spin = lerp(ball.spin, drift, ease(1.4, dt));
     }
     ball.angle += ball.spin * dt;
+  }
+
+  // Slow rotation at rest so the whole ring can be read without tilting your head; it pauses on links.
+  function idleSpin() {
+    if (reduceMotion.matches) return null;
+    return hoveringLink ? 0 : IDLE_SPIN;
   }
 
   // ---- Grabbing and throwing ----
@@ -406,6 +418,13 @@
     },
     true
   );
+
+  ring.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("pointerenter", () => { hoveringLink = true; });
+    link.addEventListener("pointerleave", () => { hoveringLink = false; });
+    link.addEventListener("focus", () => { hoveringLink = true; });
+    link.addEventListener("blur", () => { hoveringLink = false; });
+  });
 
   // ---- Screensaver ----
 
@@ -538,30 +557,30 @@
         ball.x = nx;
         ball.y = ny;
       }
-      stepSpin(dt, true);
+      stepSpin(dt, null);
     } else if (ball.mode === "free") {
       const decay = Math.exp(-FRICTION * dt);
       ball.vx *= decay;
       ball.vy *= decay;
       move(dt, b, RESTITUTION);
       stepSpin(dt, false);
-      if (Math.hypot(ball.vx, ball.vy) < 6 && Math.abs(ball.spin) < 2) {
+      if (Math.hypot(ball.vx, ball.vy) < 6) {
         ball.vx = ball.vy = 0;
         ball.mode = "rest";
       }
     } else if (ball.mode === "saver") {
       stepSaver(dt, now, b);
-      stepSpin(dt, true);
+      stepSpin(dt, null);
     } else if (ball.mode === "home") {
       ball.x = lerp(ball.x, 0, ease(5, dt));
       ball.y = lerp(ball.y, 0, ease(5, dt));
-      stepSpin(dt, true);
+      stepSpin(dt, null);
       if (Math.hypot(ball.x, ball.y) < 0.5 && Math.abs(ball.scale - 1) < 0.002) {
         ball.x = ball.y = 0;
         ball.mode = "rest";
       }
     } else {
-      stepSpin(dt, true);
+      stepSpin(dt, idleSpin());
     }
     stepJelly(dt);
 
