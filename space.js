@@ -33,6 +33,19 @@
   const TRAIL = 360;
   const PUFF_STEP = 3; // px between smoke puffs
 
+  // Starfield: drifts right to left and slightly down, like a view out a side window.
+  const STAR_DENSITY = 170 / (1440 * 900); // stars per px²
+  const STAR_MAX = 220;
+  const STAR_MIN = 90;
+  const DRIFT_X = -0.97;
+  const DRIFT_Y = 0.24;
+  const STAR_MARGIN = 4; // px beyond each edge, so stars wrap out of sight
+  const LAYERS = [
+    { share: 0.5, speed: [2, 5], size: 1.1, alpha: [0.3, 0.55] },
+    { share: 0.32, speed: [7, 11], size: 1.4, alpha: [0.4, 0.7] },
+    { share: 0.18, speed: [13, 20], size: 3, alpha: [0.55, 0.85] },
+  ];
+
   const clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
   const lerp = (a, b, t) => a + (b - a) * t;
   const smoothstep = (e0, e1, x) => {
@@ -105,6 +118,8 @@
     H = window.innerHeight;
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
+    field.count = Math.round(clamp(W * H * STAR_DENSITY, STAR_MIN, STAR_MAX));
+    if (!running) paintStill();
   }
 
   // Positions later drawing at (x, y) in CSS px, rotated clockwise by `angle`.
@@ -119,6 +134,75 @@
     ctx.globalAlpha = 1;
     ctx.globalCompositeOperation = "source-over";
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  // ---- Starfield ----
+  // Positions are normalized to the viewport so a resize just stretches the field.
+  // The list is seeded and fixed; smaller screens draw a prefix of it.
+
+  const field = (() => {
+    let seed = 20171999;
+    const random = () => {
+      seed = (seed + 0x6d2b79f5) | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+    const between = ([lo, hi]) => lo + random() * (hi - lo);
+    const f = {
+      u: new Float32Array(STAR_MAX),
+      v: new Float32Array(STAR_MAX),
+      speed: new Float32Array(STAR_MAX),
+      size: new Float32Array(STAR_MAX),
+      alpha: new Float32Array(STAR_MAX),
+      phase: new Float32Array(STAR_MAX),
+      rate: new Float32Array(STAR_MAX),
+      sprite: new Uint8Array(STAR_MAX),
+      count: 0,
+      time: 0,
+    };
+    for (let i = 0; i < STAR_MAX; i++) {
+      let roll = random();
+      let layer = 0;
+      while (layer < LAYERS.length - 1 && roll > LAYERS[layer].share) roll -= LAYERS[layer++].share;
+      const l = LAYERS[layer];
+      f.u[i] = random();
+      f.v[i] = random();
+      f.speed[i] = between(l.speed);
+      f.size[i] = l.size * (0.85 + random() * 0.3);
+      f.alpha[i] = between(l.alpha);
+      f.phase[i] = random() * TAU;
+      f.rate[i] = random() < 0.35 ? 0.6 + random() * 1.6 : 0;
+      f.sprite[i] = layer === LAYERS.length - 1 ? 1 : 0;
+    }
+    return f;
+  })();
+
+  const DOT = radial([[0, "rgba(255, 255, 255, 1)"], [0.35, "rgba(255, 255, 255, 0.85)"], [1, "rgba(255, 255, 255, 0)"]]);
+
+  function drawStars(dt, still) {
+    const fw = W + STAR_MARGIN * 2;
+    const fh = H + STAR_MARGIN * 2;
+    const dx = (DRIFT_X * dt) / fw;
+    const dy = (DRIFT_Y * dt) / fh;
+    field.time += dt;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.fillStyle = "#fff";
+    for (let i = 0; i < field.count; i++) {
+      let u = field.u[i] + dx * field.speed[i];
+      let v = field.v[i] + dy * field.speed[i];
+      u -= Math.floor(u);
+      v -= Math.floor(v);
+      field.u[i] = u;
+      field.v[i] = v;
+      const x = u * fw - STAR_MARGIN;
+      const y = v * fh - STAR_MARGIN;
+      const rate = field.rate[i];
+      ctx.globalAlpha = field.alpha[i] * (rate && !still ? 0.72 + 0.28 * Math.sin(field.time * rate + field.phase[i]) : 1);
+      const s = field.size[i];
+      if (field.sprite[i]) ctx.drawImage(DOT, x - s / 2, y - s / 2, s, s);
+      else ctx.fillRect(x - s / 2, y - s / 2, s, s);
+    }
   }
 
   // ---- Shooting stars ----
@@ -404,7 +488,6 @@
   let clock = 0; // seconds of visible time
   let running = false;
   let raf = 0;
-  let timer = 0;
   let last = 0;
 
   const schedule = (kind, [lo, hi]) => {
@@ -437,6 +520,7 @@
     const dt = Math.min(0.05, elapsed);
     spawnDue();
     clear();
+    drawStars(dt, false);
     let kept = 0;
     for (let i = 0; i < active.length; i++) {
       const event = active[i];
@@ -444,22 +528,14 @@
     }
     active.length = kept;
     ctx.globalAlpha = 1;
-    wait();
+    if (running) raf = window.requestAnimationFrame(frame);
   }
 
-  // Idle between events on a timer rather than redrawing an empty canvas every frame.
-  function wait() {
-    if (!running) return;
-    if (active.length) {
-      raf = window.requestAnimationFrame(frame);
-      return;
-    }
-    let soonest = Infinity;
-    for (const kind in next) soonest = Math.min(soonest, next[kind]);
-    timer = window.setTimeout(() => {
-      timer = 0;
-      raf = window.requestAnimationFrame(frame);
-    }, Math.max(0, (soonest - clock) * 1000));
+  // Reduced motion gets a still starfield and no events.
+  function paintStill() {
+    clear();
+    drawStars(0, true);
+    ctx.globalAlpha = 1;
   }
 
   function start() {
@@ -472,8 +548,7 @@
   function stop() {
     running = false;
     window.cancelAnimationFrame(raf);
-    window.clearTimeout(timer);
-    raf = timer = 0;
+    raf = 0;
   }
 
   document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
@@ -481,7 +556,7 @@
     if (!reduceMotion.matches) return start();
     stop();
     active.length = 0;
-    clear();
+    paintStill();
   });
   window.addEventListener("resize", resize);
 
