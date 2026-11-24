@@ -21,10 +21,10 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "22"
 
@@ -32,7 +32,7 @@ jobs:
         run: ./scripts/verify.sh
 
       - name: Set up AWS SAM
-        uses: aws-actions/setup-sam@f84ec7d548307efafe33230528756de3c5841a17 # v2
+        uses: aws-actions/setup-sam@341eee193f458fa5aae5d52c94b0c5cf3a1c5a52 # v3
 
       - name: Validate fantasy infrastructure
         run: |
@@ -62,18 +62,18 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "22"
 
       - name: Set up AWS SAM
-        uses: aws-actions/setup-sam@f84ec7d548307efafe33230528756de3c5841a17 # v2
+        uses: aws-actions/setup-sam@341eee193f458fa5aae5d52c94b0c5cf3a1c5a52 # v3
 
       - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
         with:
           role-to-assume: arn:aws:iam::545095759709:role/GitHubActionsDeployPersonalSite
           aws-region: ${{ env.AWS_REGION }}
@@ -327,3 +327,38 @@ jobs:
           aws cloudfront create-invalidation \
             --distribution-id ${CF_DISTRIBUTION_ID} \
             --paths "/*"
+
+  notify:
+    name: notify
+    needs: [verify, deploy]
+    if: always() && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      LABEL: deploy-failure
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Open or update the deploy-failure issue
+        if: contains(needs.*.result, 'failure')
+        run: |
+          set -euo pipefail
+          gh label create "${LABEL}" --color B60205 --description "Production deploy is failing" --force
+          body="Production deploy failed: ${RUN_URL} (commit ${GITHUB_SHA::7})."
+          number="$(gh issue list --state open --label "${LABEL}" --json number --jq '.[0].number // empty')"
+          if [[ -n "${number}" ]]; then
+            gh issue comment "${number}" --body "${body}"
+          else
+            gh issue create --title "Production deploy is failing" --label "${LABEL}" \
+              --assignee "${GITHUB_REPOSITORY_OWNER}" --body "${body}"
+          fi
+
+      - name: Close the deploy-failure issue
+        if: needs.deploy.result == 'success'
+        run: |
+          set -euo pipefail
+          for number in $(gh issue list --state open --label "${LABEL}" --json number --jq '.[].number'); do
+            gh issue close "${number}" --comment "Deploy succeeded: ${RUN_URL}"
+          done
