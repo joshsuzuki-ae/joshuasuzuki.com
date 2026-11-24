@@ -78,9 +78,10 @@ body {
   font-size: 17px;
 }
 
-/* No underlines: on the lower half of the ring they render as overlines. */
+/* No underlines: on the lower half of the ring they render as overlines.
+   Cursor orange (#F54E00) so resume / linkedin / say hi stand out from the ring. */
 .ring-text a {
-  fill: #fff;
+  fill: #f54e00;
   font-weight: 500;
   text-decoration: none;
   cursor: pointer;
@@ -89,7 +90,7 @@ body {
 
 .ring-text a:hover,
 .ring-text a:focus-visible {
-  fill: #9ecbff;
+  fill: #ff7a3d;
   outline: none;
 }
 
@@ -121,9 +122,12 @@ body.is-screensaver .caption .hint {
   color: rgba(255, 255, 255, 0.28);
 }
 
-body.is-screensaver .ring-text,
-body.is-screensaver .ring-text a {
+body.is-screensaver .ring-text {
   fill: var(--dvd);
+}
+
+body.is-screensaver .ring-text a {
+  fill: #f54e00;
 }
 
 .particle {
