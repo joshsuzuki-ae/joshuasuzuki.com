@@ -195,6 +195,17 @@ for key in "admin" "admin/"; do
     --region "${AWS_REGION}" >/dev/null
 done
 
+for key in "aisimulator" "aisimulator/"; do
+  aws s3api put-object \
+    --bucket "${S3_BUCKET}" \
+    --key "${key}" \
+    --body "aisimulator/index.html" \
+    --cache-control "no-cache, no-store, must-revalidate" \
+    --content-type "text/html; charset=utf-8" \
+    --profile "${AWS_PROFILE}" \
+    --region "${AWS_REGION}" >/dev/null
+done
+
 for key in "sunset" "sunset/"; do
   aws s3api put-object \
     --bucket "${S3_BUCKET}" \
